@@ -1,0 +1,32 @@
+
+@import "tailwindcss";
+@import "tailwindcss/preflight"
+
+@tailwind utilities;
+
+/* tailwind.css o tu hoja global */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none; /* IE y Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+
+.tox-tinymce {
+  border-radius: 4px !important;
+  border-color: rgba(0, 0, 0, 0.23) !important;
+}
+
+.tox-tinymce:hover {
+  border-color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.tox-tbtn {
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+.tox-tbtn--enabled {
+  background-color: #e0e0e0 !important;
+}
