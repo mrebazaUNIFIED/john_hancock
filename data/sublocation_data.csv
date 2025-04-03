@@ -1,0 +1,27 @@
+id,name,location_id
+1,Lebanon,1
+2,"New Haven",1
+3,"North Haven",1
+4,Norwich,1
+5,London,2
+6,"Frederick County",3
+7,Boston,4
+8,Cambridge,4
+9,Concord,4
+10,Lexington,4
+11,Petersham,4
+12,Watertown,4
+13,Worcester,4
+14,Elizabethtown,5
+15,"Paulus Hook",5
+16,Trenton,5
+17,Albany,6
+18,Harlem,6
+19,"New York",6
+20,Ticonderoga,6
+21,"New Bern",10
+22,Lancaster,7
+23,Philadelphia,7
+24,Providence,8
+25,"Fairfax County",9
+26,"Northampton County",9
