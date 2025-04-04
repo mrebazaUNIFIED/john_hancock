@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaArrowDown, FaArrowUp, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import BarLine from "./BarLine";
 
 const timelineData = [
   { year: "1754", hancock: "Graduates from Harvard College", us: "French and Indian War Begins; supports Britain" },
@@ -76,23 +77,15 @@ export default function Linea() {
 
   return (
     <>
-      <div className=' text-center p-8'>
-        <p className=' text-3xl py-3'>TIMELINE (1754 - 1793) Number of letters on top, and Historical events on the bottom of the timeline.. Show per year the number of letters.  1776 is the most important letter so Center on that..</p>
 
-      </div>
-
-      <div className="flex items-center justify-center w-full py-2">
-        <div className="">
-          <div className="flex items-center w-full">
-
-            <img src="/line-time.png"  className="w-auto h-auto" alt="" />
-
-          
-          </div>
-
-          
+      <div className="my-3">
+        <div>
+          <BarLine />
         </div>
+
       </div>
+
+      
     </>
   );
 }

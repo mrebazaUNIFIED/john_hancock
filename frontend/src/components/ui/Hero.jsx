@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import heroImg from '/heroBuy.png';
+import heroImgAzul from '/hancocks_azul.png';
 
 export default function Hero() {
   return (
@@ -26,7 +27,7 @@ export default function Hero() {
           className="space-y-6"
         >
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-[#1e1e1e] text-center">
-            <span className="text-[#004059]">John Hancock</span> Papers
+            <img src={heroImgAzul} alt="" /> Papers
           </h1>
           <p className=" text-[#333] text-start text-3xl">Access Thousands of Letters</p>
           <p className="text-2xl text-[#333] ">

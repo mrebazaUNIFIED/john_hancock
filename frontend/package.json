@@ -23,6 +23,7 @@
     "axios": "^1.8.3",
     "dompurify": "^3.2.4",
     "framer-motion": "^12.5.0",
+    "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
     "lexical": "^0.29.0",
     "pdfjs-dist": "^3.11.174",
@@ -35,6 +36,7 @@
     "react-pdf": "^9.2.1",
     "react-router-dom": "^7.4.0",
     "recharts": "^2.15.1",
+    "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.16"
   },
   "devDependencies": {
