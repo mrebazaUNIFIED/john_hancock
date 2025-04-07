@@ -246,13 +246,14 @@ export default function BarLine() {
                     ))}
                 </div>
 
-                <div className="flex items-center justify-between mt-4">
-                    <div className="text-start flex items-center justify-center">
+                <div className="">
+                    <p className="font-bold text-xl" style={{fontWeight:"bold"}}>Legend:</p>
+                    <div className="flex items-center content-center">
                         <p className="w-4 h-4 bg-amber-300 rounded-sm mr-2"> </p>
                         <b className="font-bold text-amber-300">Hancock Events</b>
                     </div>
 
-                    <div className="text-end flex items-center justify-center">
+                    <div className=" flex items-center content-center">
                         <p className="w-4 h-4 bg-white rounded-sm mr-2"> </p>
                         <b className="font-bold text-white">Historical Events</b>
                     </div>

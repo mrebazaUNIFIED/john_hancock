@@ -38,9 +38,16 @@ export default function FilesPage() {
     const totalPages = Math.ceil(searchFiles.length / itemsPerPage);
     const navigate = useNavigate();
 
+    
+
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
     };
+
+    const handleNavigateSearch = (type, id,search) => {
+        navigate(`/files?type=${type}&id=${id}&search=${search}`);
+        window.scrollTo(0, 0);
+      };
 
     const handleNavigate = (slug) => {
         e.preventDefault(); 
@@ -202,7 +209,7 @@ export default function FilesPage() {
 
                             <div className="space-y-1 my-2">
                                 {filteredAuthors.map((author) => (
-                                    <a key={author.id} href="/">
+                                    <a key={author.id} href={`files?type=author&id=${author.id}&search=${author.last_name}, ${author.name}`}>
                                         <p key={author.id} className="text-sm text-[#004059]">{author.last_name}, {author.name} ({getPostsByAuthor(author.id).length})</p>
                                     </a>
                                 ))}
@@ -226,7 +233,7 @@ export default function FilesPage() {
 
                             <div className="space-y-1 my-2">
                                 {filteredRecipients.map((recipient) => (
-                                    <a href="/" key={recipient.id}>
+                                    <a href={`files?type=recipient&id=${recipient.id}&search=${recipient.last_name}, ${recipient.name}`} key={recipient.id}>
                                         <p key={recipient.id} className="text-sm text-[#004059]">{recipient.last_name}, {recipient.name} ({getPostsByRecipient(recipient.id).length})</p>
                                     </a>
                                 ))}
@@ -255,7 +262,7 @@ export default function FilesPage() {
                                 />
                                 <div className="space-y-1 my-2">
                                     {filteredPeriods.map((period) => (
-                                        <a key={period.id} href="/">
+                                        <a key={period.id}  href={`files?type=period&id=${period.id}&search=${period.name}`}>
                                             <p key={period.id} className="text-sm">{period.name} ({getPostByPeriod(period.id).length})</p>
                                         </a>
                                     ))}

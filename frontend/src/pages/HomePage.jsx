@@ -10,7 +10,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <div className="max-w-7xl mx-auto px-3">
+      <div className="">
         <Linea />
       </div>
       <Search />

@@ -35,6 +35,32 @@ export default function TranscriptPage() {
 
     }
 
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('en-US', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        }).format(date);
+    };
+
+    const formatDateWithOrdinal = (dateString) => {
+        const date = new Date(dateString);
+      
+        const day = date.getDate();
+        const year = date.getFullYear();
+        const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
+      
+        // Función para agregar el sufijo ordinal
+        const getOrdinal = (n) => {
+          const s = ['th', 'st', 'nd', 'rd'];
+          const v = n % 100;
+          return n + (s[(v - 20) % 10] || s[v] || s[0]);
+        };
+      
+        return `${month} ${getOrdinal(day)} ${year}`;
+      };
+
 
     return (
         <div className=" min-h-screen">
@@ -55,6 +81,7 @@ export default function TranscriptPage() {
                     </a>
                     <div>
                         <h1 className="text-white text-2xl md:text-4xl font-semibold">
+                          
                             {postSearch?.date || "Cargando..."}
                         </h1>
                         <h2 className="text-white text-2xl md:text-4xl font-bold">

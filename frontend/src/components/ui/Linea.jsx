@@ -78,7 +78,7 @@ export default function Linea() {
   return (
     <>
 
-      <div className="my-3">
+      <div className="">
         <div>
           <BarLine />
         </div>
