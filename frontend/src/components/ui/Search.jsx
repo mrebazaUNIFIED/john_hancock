@@ -41,7 +41,7 @@ export default function Search() {
 
   // Funciones para obtener datos
   const getPeriods = () => {
-    api.get("/api/period/")
+    api.get("/api/institution/")
       .then((res) => setPeriods(res.data))
       .catch((err) => alert("Error al cargar los periodos: " + err));
   }
@@ -64,9 +64,6 @@ export default function Search() {
       .catch((err) => alert("Error al cargar los Posts: " + err));
   }
 
-
-
-
   const getPostsByAuthor = (authorId) => {
     const filteredPosts = posts.filter(post => post.author.id === authorId);
     return filteredPosts;
@@ -78,11 +75,9 @@ export default function Search() {
   };
 
   const getPostByPeriod = (periodId) => {
-    const filteredPosts = posts.filter(post => post.period.id === periodId);
+    const filteredPosts = posts.filter(post => post.institution.id === periodId);
     return filteredPosts;
   };
-
-
 
   // Filtrar datos
   const filteredAuthors = authors.filter(item =>
@@ -206,10 +201,10 @@ export default function Search() {
           </div>
         </div>
 
-        {/* Bloque Period */}
+        {/* Bloque Document Source */}
         <div className="flex flex-col p-3">
           <div className="bg-[#b60000] text-white font-semibold px-2 py-1 rounded mb-2 text-center text-sm">
-            <p className="p-2 text-left">Period</p>
+            <p className="p-2 text-left">Document Source</p>
           </div>
           <input
             type="text"
@@ -222,21 +217,13 @@ export default function Search() {
             {filteredPeriods.map((item) => (
               <button
                 key={item.id}
-                onClick={() => handleNavigate("period", item.id,`${item.name}`)}
+                onClick={() => handleNavigate("institution", item.id,`${item.name}`)}
                 className={`text-left text-sm px-2 py-1 rounded cursor-pointer ${selectedPeriod === item.id
                   ? "bg-[#b60000] text-white"
                   : "bg-[#f1efe9] hover:bg-[#b60000] hover:text-white"
                   }`}
               >
-                {item.name} {item.year_start.substring(0, 4)}-
-                {item.year_end && (
-                  (() => {
-                    const [year, month, day] = item.year_end.split("-");
-                    return month === "12" && day === "31"
-                      ? parseInt(year) + 1
-                      : year;
-                  })()
-                )} ({getPostByPeriod(item.id).length})
+                {item.name} ({getPostByPeriod(item.id).length})
               </button>
             ))}
             {periods.length > visiblePeriods && (

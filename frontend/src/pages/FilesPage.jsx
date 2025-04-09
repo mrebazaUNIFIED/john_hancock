@@ -4,7 +4,9 @@ import {
     Paper,
     Pagination,
 } from '@mui/material';
-import { useSearchParams,useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import api from '../api';
 
 
@@ -16,44 +18,58 @@ export default function FilesPage() {
     const id = searchParams.get("id");
     const search = searchParams.get("search");
 
-    const [periods, setPeriods] = useState([]);
+    const [institutions, setinstitutions] = useState([]);
     const [authors, setAuthors] = useState([]);
     const [recipients, setRecipients] = useState([]);
+    const [periods, setPeriods] = useState([])
+    const [sublocations, setSublocations] = useState([])
+
     const [searchAuthor, setSearchAuthor] = useState("");
     const [searchRecipient, setSearchRecipient] = useState("");
-    const [searchPeriod, setSearchPeriod] = useState("");
+    const [searchinstitution, setSearchinstitution] = useState("");
     const [authorLimit, setAuthorLimit] = useState(10);
     const [recipientLimit, setRecipientLimit] = useState(10);
-    const [periodLimit, setPeriodLimit] = useState(10);
+    const [institutionLimit, setinstitutionLimit] = useState(10);
+
+    //Limit 2
+    const [authorLimit2, setAuthorLimit2] = useState(10);
+    const [recipientLimit2, setRecipientLimit2] = useState(10);
+    const [institutionLimit2, setinstitutionLimit2] = useState(10);
+    const [periodLimit2, setPeriodLimit2] = useState(10);
+    const [sublocationLimit2, setSublocationLimit2] = useState(10);
+
+
     const [posts, setPosts] = useState([]);
     const [searchFiles, setSearchFiles] = useState([]);
+    const [filteredPosts, setFilteredPosts] = useState([]);
+
+
+    //search cada uno
+
+    const [searchAuthor2, setSearchAuthor2] = useState("");
+    const [searchRecipient2, setSearchRecipient2] = useState("");
+    const [searchinstitution2, setSearchinstitution2] = useState("");
+    const [searchPeriod2, setSearchPeriod2] = useState("");
+    const [searchSublocation2, setSearchSublocation2] = useState("");
+
+    //Filtros de cada uno
+    const [selectedAuthor, setSelectedAuthor] = useState("");
+    const [selectedRecipient, setSelectedRecipient] = useState("");
+    const [selectedInstitution, setSelectedInstitution] = useState("");
+    const [selectedPeriod, setSelectedPeriod] = useState("");
+    const [selectedSublocation, setSelectedSublocation] = useState("");
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(10); 
+    const [itemsPerPage] = useState(10);
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = searchFiles.slice(indexOfFirstItem, indexOfLastItem);
-
-    const totalPages = Math.ceil(searchFiles.length / itemsPerPage);
-    const navigate = useNavigate();
-
-    
+    const currentItems = filteredPosts.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
 
     const handlePageChange = (event, value) => {
         setCurrentPage(value);
     };
-
-    const handleNavigateSearch = (type, id,search) => {
-        navigate(`/files?type=${type}&id=${id}&search=${search}`);
-        window.scrollTo(0, 0);
-      };
-
-    const handleNavigate = (slug) => {
-        e.preventDefault(); 
-        navigate(`/transcript?&post=${slug}`);
-        window.scrollTo(0, 0);
-      };
 
     const getFilterName = () => {
         if (type === 'author') {
@@ -64,9 +80,9 @@ export default function FilesPage() {
             const recipient = recipients.find(r => String(r.id) === id);
             return recipient ? `${recipient.last_name}, ${recipient.name}` : '';
         }
-        if (type === 'period') {
-            const period = periods.find(p => String(p.id) === id);
-            return period ? period.name : '';
+        if (type === 'institution') {
+            const institution = institutions.find(p => String(p.id) === id);
+            return institution ? institution.name : '';
         }
         return '';
     };
@@ -81,23 +97,36 @@ export default function FilesPage() {
         return filteredPosts;
     };
 
-    const getPostByPeriod = (periodId) => {
-        const filteredPosts = posts.filter(post => post.period.id === periodId);
+    const getPostByinstitution = (institutionId) => {
+        const filteredPosts = posts.filter(post => post.institution.id === institutionId);
         return filteredPosts;
     };
 
+
+
     useEffect(() => {
-        if (periods.length === 0) getPeriods();
+        if (institutions.length === 0) getinstitutions();
         if (authors.length === 0) getAuthors();
         if (recipients.length === 0) getRecipients();
         if (posts.length === 0) getPosts();
+        if (periods.length === 0) getPeriods();
+        if (sublocations.length === 0) getSublocations();
     }, []);
 
     useEffect(() => {
-        setCurrentPage(1); // Resetear a primera página cuando cambian los filtros
+        setCurrentPage(1);
+        // Resetear todos los filtros al cambiar tipo o id
+        setSelectedAuthor("");
+        setSelectedRecipient("");
+        setSelectedInstitution("");
+        setSelectedPeriod("");
+        setSelectedSublocation("");
     }, [type, id, search]);
 
-    // Update searchFiles when data or URL params change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [type, id, search]);
+
     useEffect(() => {
         const updateSearchFiles = () => {
             if (type === 'author') {
@@ -116,10 +145,10 @@ export default function FilesPage() {
                 } else {
                     setSearchFiles([]);
                 }
-            } else if (type === 'period') {
-                const period = periods.find(p => String(p.id) === id);
-                if (period) {
-                    const filteredPosts = posts.filter(post => post.period?.id === period.id);
+            } else if (type === 'institution') {
+                const institution = institutions.find(p => String(p.id) === id);
+                if (institution) {
+                    const filteredPosts = posts.filter(post => post.institution?.id === institution.id);
                     setSearchFiles(filteredPosts);
                 } else {
                     setSearchFiles([]);
@@ -130,15 +159,36 @@ export default function FilesPage() {
         };
 
         updateSearchFiles();
-    }, [type, id, authors, recipients, periods, posts]);
+    }, [type, id, authors, recipients, institutions, posts]);
 
 
+    useEffect(() => {
+        let filtered = [...searchFiles];
 
-    // Funciones para obtener datos
-    const getPeriods = () => {
-        api.get("/api/period/")
-            .then((res) => setPeriods(res.data))
-            .catch((err) => alert("Error al cargar los periodos2: " + err));
+        if (selectedAuthor) {
+            filtered = filtered.filter(post => post.author?.id === selectedAuthor);
+        }
+        if (selectedRecipient) {
+            filtered = filtered.filter(post => post.recipient?.id === selectedRecipient);
+        }
+        if (selectedInstitution) {
+            filtered = filtered.filter(post => post.institution?.id === selectedInstitution);
+        }
+        if (selectedPeriod) {
+            filtered = filtered.filter(post => post.period?.id === selectedPeriod);
+        }
+        if (selectedSublocation) {
+            filtered = filtered.filter(post => post.sublocation?.id === selectedSublocation);
+        }
+
+        setFilteredPosts(filtered);
+        setCurrentPage(1); // Reiniciar a la primera página al cambiar filtros
+    }, [searchFiles, selectedAuthor, selectedRecipient, selectedInstitution, selectedPeriod, selectedSublocation]);
+
+    const getinstitutions = () => {
+        api.get("/api/institution/")
+            .then((res) => setinstitutions(res.data))
+            .catch((err) => alert("Error al cargar los institutionos2: " + err));
     }
 
     const getAuthors = () => {
@@ -159,6 +209,18 @@ export default function FilesPage() {
             .catch((err) => alert("Error al cargar los Posts2: " + err));
     }
 
+    const getPeriods = () => {
+        api.get("/api/period/")
+            .then((res) => setPeriods(res.data))
+            .catch((err) => alert("Error al cargar los Periods2: " + err));
+    }
+
+    const getSublocations = () => {
+        api.get("/api/sublocation/")
+            .then((res) => setSublocations(res.data))
+            .catch((err) => alert("Error al cargar los Sublocations2: " + err));
+    }
+
     const filteredAuthors = authors.filter(author =>
         author.name.toLowerCase().includes(searchAuthor.toLowerCase()) ||
         author.last_name.toLowerCase().includes(searchAuthor.toLowerCase())
@@ -169,9 +231,87 @@ export default function FilesPage() {
         recipient.last_name.toLowerCase().includes(searchRecipient.toLowerCase())
     ).slice(0, recipientLimit);
 
-    const filteredPeriods = periods.filter(period =>
-        period.name.toLowerCase().includes(searchPeriod.toLowerCase())
-    ).slice(0, periodLimit);
+    const filteredinstitutions = institutions.filter(institution =>
+        institution.name.toLowerCase().includes(searchinstitution.toLowerCase())
+    ).slice(0, institutionLimit);
+
+
+    //Filtros para seleccionar
+
+    const authorsFromPosts = Array.from(new Set(
+        searchFiles.map(post => post.author)
+            .filter(author => author)
+            .map(author => JSON.stringify(author))
+    )).map(authorStr => JSON.parse(authorStr))
+
+    const filteredAuthorsSearch = authorsFromPosts.filter(author =>
+        author.name.toLowerCase().includes(searchAuthor2.toLowerCase()) ||
+        author.last_name.toLowerCase().includes(searchAuthor2.toLowerCase())
+    )
+
+    const recipientsFromPosts = Array.from(new Set(
+        searchFiles.map(post => post.recipient)
+            .filter(recipient => recipient)
+            .map(recipient => JSON.stringify(recipient))
+    )).map(recipientStr => JSON.parse(recipientStr))
+
+
+    const filteredRecipientsSearch = recipientsFromPosts.filter(recipient =>
+        recipient.name.toLowerCase().includes(searchRecipient2.toLowerCase()) ||
+        recipient.last_name.toLowerCase().includes(searchRecipient2.toLowerCase())
+    )
+
+
+    const institutionsFromPosts = Array.from(new Set(
+        searchFiles.map(post => post.institution)
+            .filter(inst => inst)
+            .map(inst => JSON.stringify(inst))
+    )).map(instStr => JSON.parse(instStr))
+
+
+    const filteredInstitutionsSearch = institutionsFromPosts.filter(institution =>
+        institution.name.toLowerCase().includes(searchinstitution2.toLowerCase())
+    )
+
+    const periodsFromPosts = Array.from(new Set(
+        searchFiles.map(post => post.period)
+            .filter(p => p)
+            .map(p => JSON.stringify(p))
+    )).map(pStr => JSON.parse(pStr))
+
+    const filteredPeriodsSearch = periodsFromPosts.filter(period =>
+        period.name.toLowerCase().includes(searchPeriod2.toLowerCase())
+    )
+
+    const sublocationsFromPosts = Array.from(new Set(
+        searchFiles.map(post => post.sublocation)
+            .filter(s => s)
+            .map(s => JSON.stringify(s))
+    )).map(sStr => JSON.parse(sStr))
+
+    const filteredSublocationsSearch = sublocationsFromPosts.filter(sublocation =>
+        sublocation.name.toLowerCase().includes(searchSublocation2.toLowerCase())
+    )
+
+    const handleSelectAuthor = (id) => {
+        setSelectedAuthor(prev => (prev === id ? null : id));
+    };
+
+    const handleSelectRecipient = (id) => {
+        setSelectedRecipient(prev => (prev === id ? null : id));
+    };
+
+    const handleSelectInstitution = (id) => {
+        setSelectedInstitution(prev => (prev === id ? null : id));
+    };
+
+    const handleSelectPeriod = (id) => {
+        setSelectedPeriod(prev => (prev === id ? null : id));
+    };
+
+    const handleSelectSublocation = (id) => {
+        setSelectedSublocation(prev => (prev === id ? null : id));
+    };
 
 
 
@@ -248,22 +388,22 @@ export default function FilesPage() {
                             </div>
                         </Paper>)}
 
-                        {!(type === 'period') && (
+                        {!(type === 'institution') && (
                             <Paper className="p-2 mb-6 shadow-sm">
                                 <div className='bg-[#b60000] text-white p-2'>
-                                    <p>Period</p>
+                                    <p>DOCUMENT SOURCE</p>
                                 </div>
 
                                 <hr className='text-gray-400 my-2' />
                                 <input type="text" placeholder='Search here'
                                     className='border w-full p-1'
-                                    value={searchPeriod}
-                                    onChange={(e) => setSearchPeriod(e.target.value)}
+                                    value={searchinstitution}
+                                    onChange={(e) => setSearchinstitution(e.target.value)}
                                 />
                                 <div className="space-y-1 my-2">
-                                    {filteredPeriods.map((period) => (
-                                        <a key={period.id}  href={`files?type=period&id=${period.id}&search=${period.name}`}>
-                                            <p key={period.id} className="text-sm">{period.name} ({getPostByPeriod(period.id).length})</p>
+                                    {filteredinstitutions.map((institution) => (
+                                        <a key={institution.id} href={`files?type=institution&id=${institution.id}&search=${institution.name}`}>
+                                            <p key={institution.id} className="text-sm">{institution.name} ({getPostByinstitution(institution.id).length})</p>
                                         </a>
                                     ))}
                                 </div>
@@ -271,9 +411,9 @@ export default function FilesPage() {
                                 <hr className='my-1' />
 
                                 <div className="flex items-center gap-1 text-sm text-gray-600">
-                                    <button onClick={() => setPeriodLimit(10)} className="text-[#b60000] font-medium">Top 10</button>
+                                    <button onClick={() => setinstitutionLimit(10)} className="text-[#b60000] font-medium">Top 10</button>
                                     <span>/</span>
-                                    <button onClick={() => setPeriodLimit(50)} className="text-gray-500 hover:text-gray-700">Top 50 ({periods.length})</button>
+                                    <button onClick={() => setinstitutionLimit(50)} className="text-gray-500 hover:text-gray-700">Top 50 ({institutions.length})</button>
                                 </div>
                             </Paper>
                         )}
@@ -283,7 +423,7 @@ export default function FilesPage() {
 
                     {/* Main Content */}
                     <Grid item xs={12} md={8}>
-                        <div className="bg-white rounded shadow-sm">
+                        <div className="bg-white rounded shadow-sm min-w-[1000px]">
                             <div
                                 style={{
                                     backgroundImage: "url('/fondo_file.jpg')",
@@ -293,16 +433,246 @@ export default function FilesPage() {
                                 }}
                                 className="py-5 shadow-sm"
                             >
-                                <div className="my-5 h-[50px] flex flex-col items-center justify-center">
+                                <div className="my-5 h-[300px] flex flex-col items-center justify-center">
                                     <div className="flex items-center justify-center gap-2 bg-opacity-50 p-4 rounded-lg">
-                                        <input type="text" placeholder="Search" className="border p-3 w-[400px] bg-white text-gray-600 italic" value={`${type.toUpperCase()}="${getFilterName()}"`}/>
-                                        <button className="bg-gradient-to-b from-[#004059] via-[#03445e] to-[#135382] text-white border p-3 cursor-pointer rounded-lg transition-all duration-300 hover:bg-gradient-to-b hover:from-[#135382] hover:via-[#03445e] hover:to-[#004059]">
-                                            Go
-                                        </button>
+                                        <input type="text" placeholder="Search" className="border p-3 min-w-[700px] bg-white text-gray-600 italic" value={`${type.toUpperCase()}="${getFilterName()}"`} disabled />
                                     </div>
+
+                                    <div className="grid grid-cols-4 gap-x-4 p-3">
+
+                                        {!(type === 'author') && (
+                                            <div className="bg-white rounded-sm ">
+                                                <div className="bg-[#b60000]">
+                                                    <p className="text-white text-center p-1">Author</p>
+                                                </div>
+                                                <hr className='text-gray-400 my-2' />
+                                                <div className="px-2">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Search author"
+                                                        className="border w-full p-1  text-sm rounded-sm"
+                                                        value={searchAuthor2}
+                                                        onChange={(e) => setSearchAuthor2(e.target.value)}
+                                                    />
+                                                </div>
+
+                                                <div className="flex flex-col px-2 py-2 gap-1 max-h-40 overflow-y-auto ">
+                                                    {filteredAuthorsSearch.map((author) => (
+                                                        <FormControlLabel
+                                                            key={author.id}
+                                                            control={
+                                                                <Checkbox
+                                                                    size="8px"
+                                                                    sx={{
+                                                                        color: '#b60000',
+                                                                        '&.Mui-checked': {
+                                                                            color: '#b60000',
+                                                                        },
+                                                                    }}
+                                                                    checked={selectedAuthor === author.id}
+                                                                    onChange={() => handleSelectAuthor(author.id)}
+
+                                                                />
+                                                            }
+                                                            label={
+                                                                <span className="text-[10px]">
+                                                                    {`${author.last_name}, ${author.name}`}
+                                                                </span>
+                                                            }
+
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {!(type === 'recipient') && (
+                                            <div className="bg-white rounded-sm ">
+                                                <div className="bg-[#b60000]">
+                                                    <p className="text-white text-center p-1">Recipient</p>
+                                                </div>
+                                                <hr className='text-gray-400 my-2' />
+                                                <div className="px-2">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Search Recipient"
+                                                        className="border w-full p-1  text-sm rounded-sm"
+                                                        value={searchRecipient2}
+                                                        onChange={(e) => setSearchRecipient2(e.target.value)}
+                                                    />
+                                                </div>
+
+                                                <div className="flex flex-col px-2 py-2 gap-1 max-h-40 overflow-y-auto ">
+                                                    {filteredRecipientsSearch.map((recipient) => (
+                                                        <FormControlLabel
+                                                            key={recipient.id}
+                                                            control={
+                                                                <Checkbox
+                                                                    size="8px"
+                                                                    sx={{
+                                                                        color: '#b60000',
+                                                                        '&.Mui-checked': {
+                                                                            color: '#b60000',
+                                                                        },
+                                                                    }}
+                                                                    checked={selectedRecipient === recipient.id}
+                                                                    onChange={() => handleSelectRecipient(recipient.id)}
+
+                                                                />
+                                                            }
+                                                            label={
+                                                                <span className="text-[10px]">
+                                                                    {`${recipient.last_name}, ${recipient.name}`}
+                                                                </span>
+                                                            }
+
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {!(type === 'institution') && (
+                                            <div className="bg-white rounded-sm ">
+                                                <div className="bg-[#b60000]">
+                                                    <p className="text-white text-center p-1">Document Source</p>
+                                                </div>
+                                                <hr className='text-gray-400 my-2' />
+                                                <div className="px-2">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Search Document Source"
+                                                        className="border w-full p-1  text-sm rounded-sm"
+                                                        value={searchinstitution2}
+                                                        onChange={(e) => setSearchinstitution2(e.target.value)}
+                                                    />
+                                                </div>
+
+                                                <div className="flex flex-col px-2 py-2 gap-1 max-h-40 overflow-y-auto ">
+                                                    {filteredInstitutionsSearch.map((institution) => (
+                                                        <FormControlLabel
+                                                            key={institution.id}
+                                                            control={
+                                                                <Checkbox
+                                                                    size="8px"
+                                                                    sx={{
+                                                                        color: '#b60000',
+                                                                        '&.Mui-checked': {
+                                                                            color: '#b60000',
+                                                                        },
+                                                                    }}
+                                                                    checked={selectedInstitution === institution.id}
+                                                                    onChange={() => handleSelectInstitution(institution.id)}
+
+                                                                />
+                                                            }
+                                                            label={
+                                                                <span className="text-[10px]">
+                                                                    {`${institution.name}`}
+                                                                </span>
+                                                            }
+
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+
+                                        <div className="bg-white rounded-sm ">
+                                            <div className="bg-[#b60000]">
+                                                <p className="text-white text-center p-1">Period</p>
+                                            </div>
+                                            <hr className='text-gray-400 my-2' />
+                                            <div className="px-2">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search Period"
+                                                    className="border w-full p-1  text-sm rounded-sm"
+                                                    value={searchPeriod2}
+                                                    onChange={(e) => setSearchPeriod2(e.target.value)}
+                                                />
+                                            </div>
+
+                                            <div className="flex flex-col px-2 py-2 gap-1 max-h-40 overflow-y-auto ">
+                                                {filteredPeriodsSearch.map((period) => (
+                                                    <FormControlLabel
+                                                        key={period.id}
+                                                        control={
+                                                            <Checkbox
+                                                                size="8px"
+                                                                sx={{
+                                                                    color: '#b60000',
+                                                                    '&.Mui-checked': {
+                                                                        color: '#b60000',
+                                                                    },
+                                                                }}
+                                                                checked={selectedPeriod === period.id}
+                                                                onChange={() => handleSelectPeriod(period.id)}
+
+                                                            />
+                                                        }
+                                                        label={
+                                                            <span className="text-[10px]">
+                                                                {` ${period.name}`}
+                                                            </span>
+                                                        }
+
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-white rounded-sm ">
+                                            <div className="bg-[#b60000]">
+                                                <p className="text-white text-center p-1">Location</p>
+                                            </div>
+                                            <hr className='text-gray-400 my-2' />
+                                            <div className="px-2">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Search Location"
+                                                    className="border w-full p-1  text-sm rounded-sm"
+                                                    value={searchSublocation2}
+                                                    onChange={(e) => setSearchSublocation2(e.target.value)}
+                                                />
+                                            </div>
+
+                                            <div className="flex flex-col px-2 py-2 gap-1 max-h-40 overflow-y-auto ">
+                                                {filteredSublocationsSearch.map((sublocation) => (
+                                                    <FormControlLabel
+                                                        key={sublocation.id}
+                                                        control={
+                                                            <Checkbox
+                                                                size="8px"
+                                                                sx={{
+                                                                    color: '#b60000',
+                                                                    '&.Mui-checked': {
+                                                                        color: '#b60000',
+                                                                    },
+                                                                }}
+                                                                checked={selectedSublocation === sublocation.id}
+                                                                onChange={() => handleSelectSublocation(sublocation.id)}
+
+                                                            />
+                                                        }
+                                                        label={
+                                                            <span className="text-[10px]">
+                                                                {` ${sublocation.name}`}
+                                                            </span>
+                                                        }
+
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
                                     <p className="text-amber-800 font-semibold italic mt-2">
-                                        Documents filtered by: 
-                                         <span className="font-normal text-black ml-1">
+                                        Documents filtered by:
+                                        <span className="font-normal text-black ml-1">
                                             {type ? `${type.toUpperCase()}="${getFilterName()}"` : "All documents"}
                                         </span>
                                     </p>
@@ -310,9 +680,9 @@ export default function FilesPage() {
                             </div>
                             <div className='mx-5 pb-5'>
                                 <div className="flex justify-between items-center my-6">
-                                    <p className='text-gray-500 italic pl-3'>
-                                        Results {searchFiles.length > 0 ?
-                                            `${indexOfFirstItem + 1} to ${Math.min(indexOfLastItem, searchFiles.length)} of ${searchFiles.length}` :
+                                    <p className="text-gray-500 italic pl-3">
+                                        Results {filteredPosts.length > 0 ?
+                                            `${indexOfFirstItem + 1} to ${Math.min(indexOfLastItem, filteredPosts.length)} of ${filteredPosts.length}` :
                                             "0"}
                                     </p>
                                     <Pagination
@@ -328,8 +698,8 @@ export default function FilesPage() {
                                 <div className="space-y-2">
                                     {currentItems.length > 0 ? (
                                         currentItems.map((file, i) => (
-                                            <div key={file.id}> {/* Usar ID único en lugar de índice */}
-                                                <a href={`/transcript?post=${file.slug}`}  >
+                                            <div key={file.id}>
+                                                <a href={`/transcript?post=${file.slug}`}>
                                                     <p className="font-light italic bg-gray-300 px-3 text-[#093352] hover:text-[#253f52] hover:font-semibold hover:underline">
                                                         <span className='font-bold pr-3 text-black'>
                                                             {indexOfFirstItem + i + 1}
@@ -338,7 +708,6 @@ export default function FilesPage() {
                                                     </p>
                                                 </a>
                                                 <p className="text-gray-600 px-3" dangerouslySetInnerHTML={{ __html: file.content.length > 50 ? file.content.substring(0, 50) + "..." : file.content }} />
-
                                             </div>
                                         ))
                                     ) : (

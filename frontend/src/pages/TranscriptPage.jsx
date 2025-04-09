@@ -46,20 +46,20 @@ export default function TranscriptPage() {
 
     const formatDateWithOrdinal = (dateString) => {
         const date = new Date(dateString);
-      
+
         const day = date.getDate();
         const year = date.getFullYear();
         const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date);
-      
+
         // Función para agregar el sufijo ordinal
         const getOrdinal = (n) => {
-          const s = ['th', 'st', 'nd', 'rd'];
-          const v = n % 100;
-          return n + (s[(v - 20) % 10] || s[v] || s[0]);
+            const s = ['th', 'st', 'nd', 'rd'];
+            const v = n % 100;
+            return n + (s[(v - 20) % 10] || s[v] || s[0]);
         };
-      
+
         return `${month} ${getOrdinal(day)} ${year}`;
-      };
+    };
 
 
     return (
@@ -81,8 +81,10 @@ export default function TranscriptPage() {
                     </a>
                     <div>
                         <h1 className="text-white text-2xl md:text-4xl font-semibold">
-                          
-                            {postSearch?.date || "Cargando..."}
+
+                            {postSearch?.date ? formatDate(postSearch.date) : "Cargando..."}
+
+
                         </h1>
                         <h2 className="text-white text-2xl md:text-4xl font-bold">
                             {postSearch?.title || "Cargando..."}
@@ -98,9 +100,10 @@ export default function TranscriptPage() {
 
                     <div className="  p-6 space-y-4">
                         <h3 className="text-2xl font-light mb-0">   {postSearch?.title || "Cargando..."}</h3>
-                        <h3 className="text-2xl font-light mt-0">{postSearch?.sublocation.name || "Cargando..."},  {postSearch?.date || "Cargando..."}</h3>
+                        <h3 className="text-2xl font-light mt-0">{postSearch?.sublocation.name || "Cargando..."},  {postSearch?.date ? formatDate(postSearch.date) : "Cargando..."}
+                        </h3>
                         <p className="text-sm  font-semibold">From {postSearch?.author.last_name || "Cargando..."}</p>
-                        <p className="text-sm text-gray-500 text-end">{postSearch?.sublocation.name || "Cargando..."},  {postSearch?.date || "Cargando..."}</p>
+                        <p className="text-sm text-gray-500 text-end">{postSearch?.sublocation.name || "Cargando..."},  {postSearch?.date ? formatDateWithOrdinal(postSearch?.date ) : "Cargando..."}</p>
 
 
                         <p

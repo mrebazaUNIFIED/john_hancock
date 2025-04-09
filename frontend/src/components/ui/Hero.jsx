@@ -26,14 +26,17 @@ export default function Hero() {
           transition={{ duration: 1 }}
           className="space-y-6"
         >
-          <p className=" text-[#333] text-start text-3xl font-semibold">Access Thousands of Letters</p>
+          <p className=" text-[#333]  text-3xl font-semibold text-center">Access Thousands of Letters</p>
           <p className="text-2xl text-[#333] font-semibold"> Authored and Received by</p>
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-[#1e1e1e] text-center">
             <img src={heroImgAzul} alt="" /> 
           </h1>
 
           
-          <p className="text-2xl italic text-[#555] font-bold my-10">Dr. Jeffrey M. Griffith</p>
+          <p className="text-2xl italic text-[#555] font-semibold my-7">By Dr. Jeffrey M. Griffith</p>
+          <p className="text-2xl italic  font-semibold my-3">Editor of The Papers of John Hancock,</p>
+          <p className='text-2xl '>A Publication of the Colonial Society of Massachusetts</p>
+
           <motion.button
             whileHover={{ scale: 1.1, boxShadow: '0 0 20px #004059' }}
             whileTap={{ scale: 0.95 }}

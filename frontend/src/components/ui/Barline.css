@@ -125,7 +125,7 @@
 
 .timeline-carousel__item-inner .month {
   font-family: 'Libre Franklin', sans-serif;
-  font-size: 13px;
+  font-size: 16px;
   text-align: justify;
   color: var(--main-color);
   display: block;
@@ -137,7 +137,7 @@
 
 .month2{
   font-family: 'Libre Franklin', sans-serif;
-  font-size: 12px;
+  font-size: 16px;
   text-align: justify;
   display: block;
   color: white;
