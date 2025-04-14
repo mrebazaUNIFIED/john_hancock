@@ -24,9 +24,7 @@ export default function Nav() {
               <li>
                 <Link to="/community" className="">Community Board</Link>
               </li>
-              <li>
-                <Link to="/contact" className="">Contact Dr. JMG</Link>
-              </li>
+              
             </ul>
           </nav>
         </div>

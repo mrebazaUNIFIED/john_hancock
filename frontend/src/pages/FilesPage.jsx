@@ -17,6 +17,9 @@ export default function FilesPage() {
     const type = searchParams.get("type");
     const id = searchParams.get("id");
     const search = searchParams.get("search");
+    const dateSpecific = searchParams.get("date");
+    const dateInit = searchParams.get("init");
+    const dateEnd = searchParams.get("end");
 
     const [institutions, setinstitutions] = useState([]);
     const [authors, setAuthors] = useState([]);
@@ -31,12 +34,6 @@ export default function FilesPage() {
     const [recipientLimit, setRecipientLimit] = useState(10);
     const [institutionLimit, setinstitutionLimit] = useState(10);
 
-    //Limit 2
-    const [authorLimit2, setAuthorLimit2] = useState(10);
-    const [recipientLimit2, setRecipientLimit2] = useState(10);
-    const [institutionLimit2, setinstitutionLimit2] = useState(10);
-    const [periodLimit2, setPeriodLimit2] = useState(10);
-    const [sublocationLimit2, setSublocationLimit2] = useState(10);
 
 
     const [posts, setPosts] = useState([]);
@@ -153,13 +150,27 @@ export default function FilesPage() {
                 } else {
                     setSearchFiles([]);
                 }
+            } else if (type === 'datespecific' && dateSpecific) {
+                // Formato esperado: YYYY-MM-DD
+                const filteredPosts = posts.filter(post => post.date === dateSpecific);
+                setSearchFiles(filteredPosts);
+            } else if (type === 'daterange' && dateInit && dateEnd) {
+                const start = new Date(dateInit);
+                const end = new Date(dateEnd);
+
+                const filteredPosts = posts.filter(post => {
+                    const postDate = new Date(post.date);
+                    return postDate >= start && postDate <= end;
+                });
+                setSearchFiles(filteredPosts);
             } else {
                 setSearchFiles([]);
             }
         };
 
         updateSearchFiles();
-    }, [type, id, authors, recipients, institutions, posts]);
+    }, [type, id, authors, recipients, institutions, posts, dateSpecific, dateInit, dateEnd]);
+
 
 
     useEffect(() => {
@@ -313,6 +324,16 @@ export default function FilesPage() {
         setSelectedSublocation(prev => (prev === id ? null : id));
     };
 
+    const formatReadableDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    };
+
 
 
     return (
@@ -326,13 +347,20 @@ export default function FilesPage() {
                         <Paper className=" mb-6 p-2">
                             <img src="./imagen_file.png" alt="image_file" className='w-full h-[200px]' />
                             <div className='bg-[#004059] mb-2'>
-                                <p className='text-white ml-2 uppercase'>
-                                    {type}
+                                <p className="text-white ml-2 uppercase">
+                                    {type === 'datespecific' ? 'Date Specific' : type === 'daterange' ? 'Date Range' : type}
                                 </p>
+
                             </div>
                             <hr className='text-gray-400' />
                             <div className="flex items-center bg-gray-100 p-2 rounded ">
-                                <span className="ml-2 text-[#004059] font-semibold">{search}</span>
+                                <span className="ml-2 text-[#004059] font-semibold">
+                                    {type === 'datespecific' && dateSpecific
+                                        ? formatReadableDate(dateSpecific)
+                                        : type === 'daterange' && dateInit && dateEnd
+                                            ? `${formatReadableDate(dateInit)} / ${formatReadableDate(dateEnd)}`
+                                            : search}
+                                </span>
                             </div>
                         </Paper>
 
@@ -433,12 +461,29 @@ export default function FilesPage() {
                                 }}
                                 className="py-5 shadow-sm"
                             >
-                                <div className="my-5 h-[300px] flex flex-col items-center justify-center">
+                                <div className="my-5 h-[200px] flex flex-col items-center justify-center">
                                     <div className="flex items-center justify-center gap-2 bg-opacity-50 p-4 rounded-lg">
-                                        <input type="text" placeholder="Search" className="border p-3 min-w-[700px] bg-white text-gray-600 italic" value={`${type.toUpperCase()}="${getFilterName()}"`} disabled />
+                                        <input
+                                            type="text"
+                                            placeholder="Search"
+                                            className="border p-3 min-w-[700px] bg-white text-gray-600 italic"
+                                            value={
+                                                `${type === 'datespecific' ? 'Date Specific' :
+                                                    type === 'daterange' ? 'Date Range' :
+                                                        type?.toUpperCase() || ''}="` +
+                                                `${type === 'datespecific' && dateSpecific
+                                                    ? new Date(dateSpecific).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+                                                    : type === 'daterange' && dateInit && dateEnd
+                                                        ? `${new Date(dateInit).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} - ${new Date(dateEnd).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                                                        : search || ''
+                                                }"`
+                                            }
+                                            disabled
+                                        />
+
                                     </div>
 
-                                    <div className="grid grid-cols-4 gap-x-4 p-3">
+                                    <div className={`grid ${type === 'datespecific' || type === 'daterange' ? 'grid-cols-5' : 'grid-cols-4'} gap-x-4 p-3`}>
 
                                         {!(type === 'author') && (
                                             <div className="bg-white rounded-sm ">
@@ -673,8 +718,31 @@ export default function FilesPage() {
                                     <p className="text-amber-800 font-semibold italic mt-2">
                                         Documents filtered by:
                                         <span className="font-normal text-black ml-1">
-                                            {type ? `${type.toUpperCase()}="${getFilterName()}"` : "All documents"}
+                                            {type
+                                                ? `${type === 'datespecific' ? 'Date Specific' :
+                                                    type === 'daterange' ? 'Date Range' :
+                                                        type.toUpperCase()}="` +
+                                                `${type === 'datespecific' && dateSpecific
+                                                    ? new Date(dateSpecific).toLocaleDateString('en-US', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric',
+                                                    })
+                                                    : type === 'daterange' && dateInit && dateEnd
+                                                        ? `${new Date(dateInit).toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                        })} - ${new Date(dateEnd).toLocaleDateString('en-US', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric',
+                                                        })}`
+                                                        : search || ''
+                                                }"`
+                                                : 'All documents'}
                                         </span>
+
                                     </p>
                                 </div>
                             </div>

@@ -7,11 +7,11 @@ export default function Recommendation() {
 
     const getPeriods = () => {
         api.get("/api/period/")
-            .then((res) => setPeriods(res.data.slice(0,4)))
+            .then((res) => setPeriods(res.data.slice(0, 4)))
             .catch((err) => alert("Error al cargar los periodos: " + err));
     }
 
-
+    const [searchTerm, setSearchTerm] = useState("");
     //Efect
     useEffect(() => {
         getPeriods()
@@ -19,53 +19,24 @@ export default function Recommendation() {
 
 
     return (
-        <div className="mx-auto max-w-7xl px-4">
-            {/* Header */}
-            <div className='text-center my-10'>
-                <p className='text-[#AB0C2F] font-serif italic tracking-wide'>
-                    RESEARCH AT YOUR PACE
-                </p>
-                <p className='font-bold text-4xl pt-2'>
-                    Search by <span className='text-[#AB0C2F]'>Period</span>
-                </p>
+        <>
+            <div className="p-8 flex flex-col items-center gap-8">
+                <div className="flex items-center gap-4 bg-white shadow px-6 py-4 rounded-md w-full max-w-3xl">
+                    <input
+                        type="text"
+                        placeholder="Type Your Question here using Dr. JMG's AI"
+                        className="flex-grow outline-none bg-transparent text-sm border border-gray-300 rounded-md p-3 placeholder:text-[#c9b3b3] placeholder:font-bold"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <button className="bg-[#b60000] text-white px-6 py-2 rounded-md font-semibold hover:bg-red-700 transition">
+                        Search Documents
+                    </button>
+                </div>
             </div>
 
-            {/* Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                {periods.map((period, index) => (
-                    <a
-                        href="#"
-                        key={index}
-                        className="relative rounded overflow-hidden group h-[450px] cursor-pointer"
-                    >
-                        {/* Image */}
-                        <img
-                            src={period.image}
-                            alt={period.name}
-                            className="w-full h-full object-cover transform group-hover:scale-105 transition duration-500"
-                        />
 
-                        {/* Overlay oscuro */}
-                        <div className="absolute inset-0 bg-black/40" />
+        </>
 
-                        {/* Text */}
-                        <div className="absolute bottom-4 left-4 text-white z-10">
-                            <h3 className="font-semibold text-lg underline">{period.name}</h3>
-                            <p className="text-sm">{period.year_start.substring(0, 4)} - {period.year_end && (
-                        <>
-
-                          {(() => {
-                            const [year, month, day] = period.year_end.split("-");
-                            return month === "12" && day === "31"
-                              ? parseInt(year) + 1
-                              : year;
-                          })()}
-                        </>
-                      )}</p>
-                        </div>
-                    </a>
-                ))}
-            </div>
-        </div>
     );
 }
